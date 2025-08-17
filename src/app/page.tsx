@@ -5,20 +5,25 @@ export default function Home() {
   const [regex, setRegex] = useState("");
   const [res, setRes] = useState("");
 
+  const regexType = (str: string) => {
+    if (str.includes("/")) {
+      const reg = str.trim().match(/^\/(.+)\/([a-z]*)$/i);
+      if (!reg) return null;
+      return new RegExp(reg[1].replace(/\\\\+/g, "\\"), reg[2]);
+    } else {
+      return new RegExp(str.replace(/\\\\+/g, "\\"), "i");
+    }
+  };
+
   const handleTesting = () => {
     if (!text || !regex) return;
-    const reg = regex.trim().match(/^\/(.+)\/([a-z]*)$/i);
-    if (!reg) return;
-
-    if (regex.includes("/")) {
-      const newRegex = new RegExp(reg[1], reg[2]); // first idx returns the entire string
-      const match = text.match(newRegex);
-      setRes(match ? String(match) : "Please try again");
-    } else {
-      const newRegex = new RegExp(regex, "gi");
-      const match = text.match(newRegex);
-      setRes(match ? String(match) : "Please try again");
+    const newRegex = regexType(regex);
+    if (!newRegex) {
+      setRes("Invalid regex format");
+      return;
     }
+    const match = text.match(newRegex);
+    setRes(match ? String(match) : "Please try again");
   };
 
   return (
