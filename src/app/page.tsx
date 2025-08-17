@@ -2,14 +2,18 @@
 import { useState } from "react";
 export default function Home() {
   const [text, setText] = useState("");
-  const [regex, setRegex] = useState<RegExp | null>();
+  const [regex, setRegex] = useState("");
   const [res, setRes] = useState("");
 
   const handleTesting = () => {
     if (!text || !regex) return;
-    const match = text.match(regex);
-    console.log(typeof regex);
-    setRes(match ? match.join(",") : String(match));
+    const reg = regex.match(/^\/(.+)\/([a-z]*)$/i);
+    if (!reg) return;
+
+    const newRegex = new RegExp(reg[1], reg[2]); // first idx returns the entire string
+
+    const match = text.match(newRegex);
+    setRes(match ? match.join(" ,") : String(match));
   };
 
   return (
@@ -29,7 +33,7 @@ export default function Home() {
         <input
           type="text"
           className="input"
-          onChange={(e) => setRegex(new RegExp(e.target.value, "g"))}
+          onChange={(e) => setRegex(e.target.value)}
           placeholder="Type here"
           required
         />
